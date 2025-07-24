@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning 3D Scene Analogies with Neural Contextual Scene Maps</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600&family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bulma -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script src="./js/bulma_toggle.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/5fd1dd8417.js" crossorigin="anonymous"></script>
+
+    <!-- Academicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+  </head>
+
+  <body>
+    <!-- logo img -->
+    <nav class="navbar logo">
+      <div class="navbar-brand logo">
+        <a class="navbar-item logo" href="https://3d.snu.ac.kr/">
+          <img src="./assets/3dv.png" />
+        </a>
+      </div>
+    </nav>
+
+    <!-- title / authors / icons -->
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-widescreen has-text-centered">
+          <!-- title -->
+          <h1 class="title is-size-1 is-size-2-mobile publication-title">
+            Learning 3D Scene Analogies with Neural Contextual Scene Maps
+          </h1>
+
+          <!-- authors -->
+          <div class="container is-max-desktop has-text-centered">
+            <div class="columns is-mobile is-centered is-gapless">
+              <div class="column is-2-tablet is-size-5-tablet publication-authors">
+                <a class="author-blocks" href="https://www.junhokim.xyz">Junho Kim<sup>1</sup></a>
+              </div>
+              <div class="column is-2-tablet is-size-5-tablet publication-authors">
+                <a class="author-blocks" href="https://eunsunlee.github.io/">Eun Sun Lee<sup>1</sup></a>
+              </div>
+              <div class="column is-2-tablet is-size-5-tablet publication-authors">
+                <a class="author-blocks" href="https://www.gwangtakbae.info/">Gwangtak Bae<sup>1</sup></a>
+              </div>
+              <div class="column is-2-tablet is-size-5-tablet publication-authors">
+                <a class="author-blocks" href="http://3d.snu.ac.kr/members">Young Min Kim<sup>1,2</sup></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="is-size-5-tablet publication-institute">
+            <span class="author-block"><sup>1</sup>Dept. of Electrical and Computer Engineering, Seoul National University</span><br>
+            <span class="author-block"><sup>2</sup>Interdisciplinary Program in Artificial Intelligence and INMC, Seoul National University</span><br>
+          </div>
+
+          <!-- icons -->
+          <div class="is-size-5 link-blocks">
+            <a class="button link-button is-rounded" href="https://arxiv.org/abs/2503.15897">
+              <span class="icon">
+                <i class="fa-solid fa-file"></i>
+              </span>
+              <span>Paper</span>
+            </a>
+            <a class="button link-button is-rounded" href="https://arxiv.org/abs/2503.15897">
+              <span class="icon">
+                <i class="ai ai-arxiv"></i>
+              </span>
+              <span>arXiv</span>
+            </a>
+            <a class="button link-button is-rounded" href="https://www.youtube.com/watch?v=IAHvWwHuuHU">
+              <span class="icon">
+                <i class="fa-brands fa-youtube"></i>
+              </span>
+              <span>Video (Coming Soon!)</span>
+            </a>
+            <a class="button link-button is-rounded" href="https://github.com/82magnolia/3d_scene_analogies">
+              <span class="icon">
+                <i class="fab fa-github"></i>
+              </span>
+              <span>Code</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- teasor -->
+    <section class="hero">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <img src="./assets/overview.png" width="100%" style="display: block; margin: auto" />
+          <h2 class="subtitle has-text-centered">
+            <b>3D scene analogies</b> are dense maps that connect regions sharing similar scene contexts.
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- content section with left-side subtitle, which is aligned to center -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <!-- abstract -->
+        <div class="columns">
+          <div class="column is-one-fifth has-text-centered">
+            <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">Abstract</h2>
+          </div>
+          <div class="column has-text-justified">
+            <p class="content">
+              Understanding scene contexts is crucial for machines to perform tasks and adapt prior knowledge in unseen or noisy 3D environments.
+              As data-driven learning is intractable to comprehensively encapsulate diverse ranges of layouts and open spaces, we propose teaching machines to identify relational commonalities in 3D spaces.
+              Instead of focusing on point-wise or object-wise representations, we introduce 3D scene analogies, which are smooth maps between 3D scene regions that align spatial relationships.
+              Unlike well-studied single instance-level maps, these scene-level maps smoothly link large scene regions, potentially enabling unique applications in trajectory transfer in AR/VR, long demonstration transfer for imitation learning, and context-aware object rearrangement.
+              To find 3D scene analogies, we propose neural contextual scene maps, which extract descriptor fields summarizing semantic and geometric contexts, and holistically align them in a coarse-to-fine manner for map estimation.
+              This approach reduces reliance on individual feature points, making it robust to input noise or shape variations.
+              Experiments demonstrate the effectiveness of our approach in identifying scene analogies and transferring trajectories or object placements in diverse indoor scenes, indicating its potential for robotics and AR/VR applications.
+            </p>
+          </div>
+        </div>
+        
+        <!-- TODO: Add video later
+        <div class="columns">
+          <div class="column is-one-fifth has-text-centered">
+            <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">Video</h2>
+          </div>
+          <div class="column">
+            <div class="publication-video">
+              <iframe
+                src="https://www.youtube.com/embed/IAHvWwHuuHU?si=IuXsoXYLuRD74CCy"
+                allow="autoplay; encrypted-media"
+                allowfullscreen="true"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+
+    </section>
+
+    <!-- content section with left-side subtitle -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns">
+          <div class="column is-one-fifth">
+            <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+              Task Overview
+            </h2>
+          </div>
+          <div class="column has-text-justified">
+            <img src="./assets/task_overview.png" width="100%" style="display: block; margin: auto" />
+            <p class="content">
+              We propose a new task of finding <b>3D scene analogies</b>.
+              Given two scenes containing regions with similar scene contexts, 3D scene analogies are defined as dense mappings between the regions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- content section with left-side subtitle -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns">
+          <div class="column is-one-fifth">
+            <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+              Why 3D Scene Analogies?
+            </h2>
+          </div>
+          <div class="column has-text-justified">
+            <img src="./assets/motivation.png" width="100%" style="display: block; margin: auto" />
+            <p class="content">
+              Scene contexts, which are defined by relations between objects and open spaces, are often hard to explicitly model in detail.
+              We instead have machines search for <b>analogies</b>, which can implicitly capture the structural commonalities in 3D scenes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- content section with left-side subtitle -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns">
+          <div class="column is-one-fifth">
+            <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+              Where can we use 3D Scene Analogies?
+            </h2>
+          </div>
+          <div class="column has-text-justified">
+            <img src="./assets/application.png" width="100%" style="display: block; margin: auto" />
+            <p class="content">
+              Scene analogies are useful for tasks requiring fine-grained 3D transfer.
+              One can transfer <b>motion trajectories</b> while preserving the contextual information.
+              Alternatively, <b>object placements</b> can be transferred: here objects from one scene are mapped to another using the dense maps.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+<!-- TODO: Start from here    
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns">
+        <div class="column is-one-fifth">
+          <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+            Efficient Distance Function Comparison for Large-Scale Localization
+          </h2>
+        </div>
+        <div class="column has-text-justified">
+          <p class="content">
+            To scale our pipeline for large-scale scenes, we propose an acceleration scheme for distance function comparison.
+            We find that the distance function formulation in prior works does not scale well.
+            Consider the equation below, which is the previously used formula for comparing distance functions [1].
+          </p>
+          <img src="./assets/ldl.svg" width="80%" style="display: block; margin: auto" />
+          <p class="content">
+            Here <img src="./assets/rho.svg" width="5%" style="display: inline-block; margin: auto"/> denotes the robust cost function evaluated over uniformly sampled points <img src="./assets/q.svg" width="7%" style="display: inline-block; margin: auto"/> on the sphere.
+            Notice that the 3D distance function term is dependent on rotations.
+          </p>
+          <img src="./assets/rotation_problem.png" width="100%" style="display: block; margin: auto" />
+          <p class="content">
+            This is problematic in large-scale scenarios, as the principal directions used for extracting the rotation pool varies for each query and scene.
+            Therefore we propose a modified comparison formula, where the <b>rotation is factored out</b> from the 3D distance function. 
+          </p>
+          <img src="./assets/new_formula.svg" width="80%" style="display: block; margin: auto" />
+          <p>
+            As the 3D distance function is no longer dependent on rotation, its values can be pre-computed and cached prior to localization.
+            This largely reduces runtime and enables our method to perform fast localization while not largely sacrificing accuracy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns">
+      <div class="column is-one-fifth">
+        <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+          Localization Performance Analysis
+        </h2>
+      </div>
+      <div class="column has-text-justified">
+        <img src="./assets/loc_results.png" width="100%" style="display: block; margin: auto" />
+        <p class="content">
+          Our fully geometric pipeline can effectively localize in large-scale scenarios.
+          The method shows competitive performance when compared against conventional visual feature-based localization methods, while maintaining a small map size and runtime.
+        </p>
+        <img src="./assets/lighting_robustness.png" width="100%" style="display: block; margin: auto" />
+        <p class="content">
+          Due to the fully geometric formulation based on lines, our method is robust to lighting changes.
+          We evaluate our method under various lighting conditions, and show recall curves while shading the maximum and minimum recall values.
+          Our method attains a high recall rate while showing only a small performance deviation amidst lighting variations.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns">
+      <div class="column is-one-fifth">
+        <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+          Applicability to Floorplan Localization
+        </h2>
+      </div>
+      <div class="column has-text-justified">
+        <img src="./assets/floorplan_vis.png" width="100%" style="display: block; margin: auto" />
+        <p class="content">
+          As our method only exploits lines in 2D and 3D for localization, we find that it can also perform localization using floorplan maps.
+          To elaborate, we evaluate our method using the lines from floorplan maps as shown above, <b>without altering the localization hyperparameters</b>.
+        </p>
+        <img src="./assets/floorplan_loc.png" width="100%" style="display: block; margin: auto" />
+        <p class="content">
+          Our method performs competitively against existing floorplan localization methods, which are specifically tailored for the task.
+          Thus we expect our method to serve as a practical approach for various geometric localization setups.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns">
+      <div class="column is-one-fifth">
+        <h2 class="subtitle is-4 is-size-3-mobile has-text-weight-medium publication-keywords">
+          Visualization of Pose Refinement
+        </h2>
+      </div>
+      <div class="column has-text-justified">
+        <p class="content">
+          Below we show visualizations of our pose refinement process.
+          Notice how the projected 3D lines approach the query image lines as the intersection points get aligned.
+        </p>
+        <img src="./assets/opt_anime.gif" width="100%" style="display: block; margin: auto" />
+        <img src="./assets/opt_anime1.gif" width="100%" style="display: block; margin: auto" />
+        <img src="./assets/opt_anime2.gif" width="100%" style="display: block; margin: auto" />
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="column is-full-width is-centered has-text-centered">
+      <h2 class="subtitle is-size-3 has-text-weight-medium publication-keywords">References</h2>
+      <p class="content has-text-justified">
+        1. Junho Kim, Changwoon Choi, Hojun Jang, and Young Min Kim. <i>Ldl: Line distance functions for panoramic localization</i>, ICCV 2023
+      </p>
+    </div>
+  </div>
+</section>
+-->
+
+    <!-- BibTex sectoion -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="column is-full-width is-centered has-text-centered">
+          <h2 class="subtitle is-size-3 has-text-weight-medium publication-keywords">BibTeX</h2>
+        </div>
+        <div class="box bibtex-box">
+          <pre>
+@InProceedings{Kim_2025_ICCV,
+  author    = {Kim, Junho and Bae, Gwangtak and Lee, Eun Sun and Kim, Young Min},
+  title     = {Learning 3D Scene Analogies with Neural Contextual Scene Maps},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  month     = {October},
+  year      = {2025},
+}          
+        </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer section -->
+    <footer class="footer" style="padding-top: 1rem">
+      <!-- navigation -->
+      <a role="button" class="navbar-burger" data-target="moreResearch" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+      <div class="navbar-menu" id="moreResearch">
+        <div class="navbar-start" style="flex-grow: 1; justify-content: center">
+          <div class="block is-flex" style="margin-bottom: 0px">
+            <a class="navbar-item" href="https://www.junhokim.xyz">
+              <span class="icon">
+                <i class="fas fa-home"></i>
+              </span>
+            </a>
+            <a class="navbar-item" href="https://github.com/82magnolia">
+              <span class="icon">
+                <i class="fab fa-github"></i>
+              </span>
+            </a>
+          </div>
+          <div class="navbar-item has-dropdown has-dropdown-up is-hoverable">
+            <a class="navbar-link">More Research</a>
+
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item" href="https://82magnolia.github.io/piccolo/">
+                PICCOLO: Point Cloud-Centric Omnidirectional Localization
+              </a>
+              <a class="navbar-item" href="https://82magnolia.github.io/cpo/">
+                CPO: Change Robust Panorama to Point Cloud Localization
+              </a>
+              <a class="navbar-item" href="https://82magnolia.github.io/event_localization/">
+                Event-Based Visual Localization
+              </a>
+              <a class="navbar-item" href="https://82magnolia.github.io/ldl/">
+                LDL: Line Distance Functions for Panoramic Localization
+              </a>
+              <a class="navbar-item" href="https://82magnolia.github.io/fgpl/">
+                Fully Geometric Panoramic Localization
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- license -->
+      <div class="content has-text-centered" style="margin-top: 1.6rem">
+        <p>
+          This website is licensed under a
+          <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"
+            >Creative Commons Attribution-ShareAlike 4.0 International License</a
+          >
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
