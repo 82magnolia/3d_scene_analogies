@@ -1,0 +1,14 @@
+{
+    "flake8.args": [
+        "--max-line-length=500",
+        "--ignore=E402,F841,E502,E128",
+    ],
+    "python.analysis.exclude": [
+        "./log/*",
+        "**/__pycache__",
+        "**/build", 
+        ".git",
+        "myenv/**",
+        "./data/*"
+    ]
+}
