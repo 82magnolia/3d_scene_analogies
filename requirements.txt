@@ -1,0 +1,25 @@
+numpy
+open3d
+scipy
+opencv-python
+pandas
+scikit-learn
+h5py
+pytransform3d
+ortools
+trimesh
+shapely
+networkx
+alphashape
+rdp
+wandb
+scikit-image
+pyrr
+trimesh
+simple-3dviz
+smplx
+triangle
+# For running vision model baseline
+hydra-core
+einops
+transformers==4.45.2

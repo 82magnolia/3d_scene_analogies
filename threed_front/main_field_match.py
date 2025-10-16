@@ -209,12 +209,6 @@ class RelMatchEvaluator():
             # List up instances to perform global / local matchment
             if getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'class_vector':
                 global_transform_list, global_inst_match_list = self.global_matcher.find_transforms(pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device))
-            elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'language_model':
-                global_transform_list, global_inst_match_list = self.global_matcher.find_transforms(pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses'])
-            elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'clip':
-                global_transform_list, global_inst_match_list = self.global_matcher.find_transforms(pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id'])
-            elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'caption_model':
-                global_transform_list, global_inst_match_list = self.global_matcher.find_transforms(pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id'])
             else:
                 raise NotImplementedError("Other embeddings not supported")
 
@@ -225,12 +219,6 @@ class RelMatchEvaluator():
             else:
                 if getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'class_vector':
                     local_transform_list, local_inst_match_list = self.local_matcher.find_transforms(global_transform_list, global_inst_match_list, pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device))
-                elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'language_model':
-                    local_transform_list, local_inst_match_list = self.local_matcher.find_transforms(global_transform_list, global_inst_match_list, pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses'])
-                elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'clip':
-                    local_transform_list, local_inst_match_list = self.local_matcher.find_transforms(global_transform_list, global_inst_match_list, pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id'])
-                elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'caption_model':
-                    local_transform_list, local_inst_match_list = self.local_matcher.find_transforms(global_transform_list, global_inst_match_list, pair_pos_query, pos_query, scene_pcd['pair_pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id'])
                 else:
                     raise NotImplementedError("Other embeddings not supported")
 
@@ -348,36 +336,12 @@ class RelMatchEvaluator():
                     # NOTE: For obtaining current scene object ids and subclasses, 'pos' and 'pair_pos' are inverted
                     if getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'class_vector':
                         inv_global_transform_list, inv_global_inst_match_list = self.global_matcher.find_transforms(inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device))
-                    elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'language_model':
-                        curr_scene_subclasses = {
-                            'pos': scene_pcd['scene_subclasses']['pair_pos'][scene_idx: scene_idx + 1],
-                            'pair_pos': scene_pcd['scene_subclasses']['pos'][scene_idx: scene_idx + 1],
-                        }
-                        inv_global_transform_list, inv_global_inst_match_list = self.global_matcher.find_transforms(inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_subclasses=curr_scene_subclasses)
-                    elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'clip':
-                        curr_scene_obj_id = {
-                            'pos': scene_pcd['scene_obj_id']['pair_pos'][scene_idx: scene_idx + 1],
-                            'pair_pos': scene_pcd['scene_obj_id']['pos'][scene_idx: scene_idx + 1],
-                        }
-                        inv_global_transform_list, inv_global_inst_match_list = self.global_matcher.find_transforms(inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_id=curr_scene_obj_id)
-                    elif getattr(self.global_feature_field.cfg, "semantics_emb_type", "class_vector") == 'caption_model':
-                        curr_scene_obj_id = {
-                            'pos': scene_pcd['scene_obj_id']['pair_pos'][scene_idx: scene_idx + 1],
-                            'pair_pos': scene_pcd['scene_obj_id']['pos'][scene_idx: scene_idx + 1],
-                        }
-                        inv_global_transform_list, inv_global_inst_match_list = self.global_matcher.find_transforms(inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_id=curr_scene_obj_id)
                     else:
                         raise NotImplementedError("Other embeddings not supported")
 
                     # Estimate local transform (NOTE: 'pos' and 'pair_pos' scenes are inversed)
                     if getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'class_vector':
                         inv_local_transform, inv_local_inst_match = self.local_matcher.find_transforms(inv_global_transform_list, inv_global_inst_match_list, inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device))
-                    elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'language_model':
-                        inv_local_transform, inv_local_inst_match = self.local_matcher.find_transforms(inv_global_transform_list, inv_global_inst_match_list, inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_subclasses=curr_scene_subclasses)
-                    elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'clip':
-                        inv_local_transform, inv_local_inst_match = self.local_matcher.find_transforms(inv_global_transform_list, inv_global_inst_match_list, inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_id=curr_scene_obj_id)
-                    elif getattr(self.local_feature_field.cfg, "semantics_emb_type", "class_vector") == 'caption_model':
-                        inv_local_transform, inv_local_inst_match = self.local_matcher.find_transforms(inv_global_transform_list, inv_global_inst_match_list, inv_pair_pos_query, inv_pos_query, scene_pcd['pos'][scene_idx].to(self.device), scene_pcd['pair_pos'][scene_idx].to(self.device), obj_id=curr_scene_obj_id)
                     else:
                         raise NotImplementedError("Other embeddings not supported")
 

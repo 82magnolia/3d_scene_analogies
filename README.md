@@ -113,6 +113,56 @@ Once downloaded, unzip and place the folder under `./data/arkit_large_noise_augm
 Please download the models from the following [link](https://drive.google.com/drive/folders/10LxXpkZXC0_roXWQ3BA3g_kvKJzRsKym?usp=sharing).
 Then place the models under the `pretrained/` folder.
 
+## Quickstart on Your Own Data!
+To start, prepare a colored point cloud in `.ply` format and an instance label point cloud also in `.ply` format, similar to the samples stored in `sample_demo_pcd/`.
+
+Specifically, the colored point cloud should be saved in `[x y z r g b]` format and the instance point cloud should be similarly saved in `[x y z instance_id instance_id instance_id]` format.
+
+**Note:** Our model assumes the +y direction to point upwards (i.e., opposite to the gravity direction). Please align your data accordingly.
+
+### Step 1. Obtaining Instance Label Point Clouds
+We provide convenience scripts to extract instance label point clouds.
+If these scripts don't work for your data, try obtaining instance labels from off-the-shelf segmentation algorithms such as [Mask3D](https://github.com/JonasSchult/Mask3D).
+
+#### Mesh Scenes
+If the original 3D scene is organized in the following structure, with each `obj_i/` containing mesh files in `.ply` format for a scene object, `extract_pcd_from_mesh.py` can extract colored point clouds and instance label point clouds from the meshes.
+
+    scene_mesh_root/
+    └── obj_1
+        └── model.ply
+    └── obj_2
+        └── model.ply
+    ...
+    └── obj_N
+        └── model.ply
+
+Run the following command to process the meshes.
+```
+python -m demo_zero_shot.extract_pcd_from_mesh --scene_dir $PATH_TO_MESH --save_pcd_path $PATH_TO_MESH/scene_pcd.ply
+```
+
+#### Point Cloud Scenes
+If the original 3D scene is a point cloud with an equal number of points per each object, run the following command to obtain an instance label point cloud.
+```
+python -m demo_zero_shot.extract_inst_pcd --pcd_path $PATH_TO_POINT_CLOUD
+```
+
+### Step 2. Finding 3D Scene Analogies
+We provide an additional pre-trained model for zero-shot evaluation: *semantics-agnostic* model (`3dfront_no_semantic`) which does not take semantic labels as input.
+Download the model from this [link](https://drive.google.com/drive/folders/10LxXpkZXC0_roXWQ3BA3g_kvKJzRsKym?usp=sharing).
+
+Run the following command to obtain 3D scene analogies using the semantics-agnostic model.
+Please specify the region of interest (RoI) to match using the `--roi_ids` field.
+```
+python -m demo_zero_shot.main_pcd_analogy --log_dir ./log/demo_test_pair/ --load_local_feature_field ./pretrained/3dfront_no_semantic/model.pth --load_global_feature_field ./pretrained/3dfront_no_semantic/model.pth --num_vert_split 1 --local_rbf_smoothing 0.5 --global_num_rot 4 --global_dist_valid_thres 1.5 --global_mapping_type scale_rot --global_topk 30 --pcd_tgt ./sample_demo_pcd/target_scene/scene_pcd.ply --pcd_ref ./sample_demo_pcd/reference_scene/scene_pcd.ply --roi_ids 3 4 5 6 7 --field_type distance --vis_local_match_mode intra_match --local_topk 1 --scene_sample_points 100 --num_query 100
+```
+
+This will yield a visualization as shown below.
+Note the floor contours are omitted as the model only takes object points as input.
+
+[<img src="example_demo_pcd.png" width="600"/>](example_demo_pcd.png)
+
+
 ## Quickstart (3D-FRONT & ARKitScenes)
 ### 3D-FRONT
 Run the following script to generate visualizations for a few examples in the 3D-FRONT dataset.

@@ -127,15 +127,6 @@ class KeyPointFeatureField(AbstractFeatureField):
                 if not getattr(cfg, 'train_semantics_emb', False):  # Optionally freeze semantics embedding
                     for param in self.semantics_emb.parameters():
                         param.requires_grad = False
-            elif self.semantics_emb_type == 'language_model':
-                self.semantics_emb = np.load(self.cfg.sentence_emb_path)
-                self.semantics_emb = {s: torch.from_numpy(self.semantics_emb[s])[:self.semantics_emb_size].to(self.device) for s in self.semantics_emb.keys()}
-            elif self.semantics_emb_type == 'clip':
-                self.semantics_emb = np.load(self.cfg.clip_emb_path)
-                self.semantics_emb = {s: torch.from_numpy(self.semantics_emb[s])[:self.semantics_emb_size].to(self.device) for s in self.semantics_emb.keys()}
-            elif self.semantics_emb_type == 'caption_model':
-                self.semantics_emb = np.load(self.cfg.caption_emb_path)
-                self.semantics_emb = {s: torch.from_numpy(self.semantics_emb[s])[:self.semantics_emb_size].to(self.device) for s in self.semantics_emb.keys()}
             else:
                 raise NotImplementedError("Other embeddings not supported")
 
@@ -232,42 +223,6 @@ class KeyPointFeatureField(AbstractFeatureField):
                     semantics_emb = self.semantics_emb(agg_feats[..., 1].long() + 1)  # (N_batch, N_query, K, D_sem_emb)
                 else:  # Three additional labels for wall, ground, and floor
                     semantics_emb = self.semantics_emb(agg_feats[..., 1].long() + 3)  # (N_batch, N_query, K, D_sem_emb)
-            elif getattr(self, "semantics_emb_type", 'class_vector') == 'language_model':
-                max_scene_points = scene_pcd.features_padded().shape[1]
-                scene_lang_feats = torch.zeros(N_batch, max_scene_points, self.semantics_emb_size).to(self.device)
-                for scene_idx in range(N_batch):
-                    scene_instances = scene_pcd.features_list()[scene_idx][..., 0].long()
-                    scene_unq_instances = torch.unique(scene_instances)
-                    for unq_inst in scene_unq_instances:
-                        if unq_inst == -1:  # Floorplan corner
-                            scene_lang_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb["floorplan corner"]
-                        else:
-                            scene_lang_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb[kwargs["obj_subclasses"][scene_idx][unq_inst]]
-                semantics_emb = masked_gather(scene_lang_feats, agg_idx)  # (N_batch, N_query, K, D_sem_emb)
-            elif getattr(self, "semantics_emb_type", 'class_vector') == 'clip':
-                max_scene_points = scene_pcd.features_padded().shape[1]
-                scene_clip_feats = torch.zeros(N_batch, max_scene_points, self.semantics_emb_size).to(self.device)
-                for scene_idx in range(N_batch):
-                    scene_instances = scene_pcd.features_list()[scene_idx][..., 0].long()
-                    scene_unq_instances = torch.unique(scene_instances)
-                    for unq_inst in scene_unq_instances:
-                        if unq_inst == -1:  # Floorplan corner
-                            scene_clip_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb["floorplan corner"]  # NOTE: We use CLIP text embeddings for semantic descriptions of corners
-                        else:
-                            scene_clip_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb[kwargs["obj_id"][scene_idx][unq_inst]]
-                semantics_emb = masked_gather(scene_clip_feats, agg_idx)  # (N_batch, N_query, K, D_sem_emb)
-            elif getattr(self, "semantics_emb_type", 'class_vector') == 'caption_model':
-                max_scene_points = scene_pcd.features_padded().shape[1]
-                scene_cap_feats = torch.zeros(N_batch, max_scene_points, self.semantics_emb_size).to(self.device)
-                for scene_idx in range(N_batch):
-                    scene_instances = scene_pcd.features_list()[scene_idx][..., 0].long()
-                    scene_unq_instances = torch.unique(scene_instances)
-                    for unq_inst in scene_unq_instances:
-                        if unq_inst == -1:  # Floorplan corner
-                            scene_cap_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb["floorplan corner"]  # NOTE: We use caption embeddings for semantic descriptions of corners
-                        else:
-                            scene_cap_feats[scene_idx, torch.where(scene_instances == unq_inst)[0], :] = self.semantics_emb[kwargs["obj_id"][scene_idx][unq_inst]]
-                semantics_emb = masked_gather(scene_cap_feats, agg_idx)  # (N_batch, N_query, K, D_sem_emb)
             else:
                 raise NotImplementedError("Other embeddings not supported")
         else:

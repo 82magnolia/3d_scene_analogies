@@ -49,28 +49,10 @@ class AffineMatcher:
         # NOTE 7: init_tgt_query_pcd is set as mean of tgt_query_pcd
 
         # Flag for ignoring semantic labels
-        if 'obj_subclasses' in kwargs:
-            validation_modality = 'language_model'
-            sentence_mapper = np.load(self.global_feature_field.cfg.sentence_emb_path)
-            sentence_valid_thres = 3.0
-        elif 'obj_id' in kwargs:
-            if self.global_feature_field.cfg.semantics_emb_type == "clip":
-                validation_modality = 'clip'
-                clip_mapper = np.load(self.global_feature_field.cfg.clip_emb_path)
-                clip_valid_thres = 12.0
-            elif self.global_feature_field.cfg.semantics_emb_type == "dino":
-                validation_modality = 'dino'
-                dino_mapper = np.load(self.global_feature_field.cfg.dino_emb_path)
-                dino_valid_thres = 12.0
-            else:
-                validation_modality = 'caption_model'
-                caption_mapper = np.load(self.global_feature_field.cfg.caption_emb_path)
-                caption_valid_thres = 8.0
-        else:
-            if getattr(self.global_feature_field, "semantics_emb_size", 0) != 0:
-                validation_modality = 'semantics'
-            else:  # Only distance embeddings are used
-                validation_modality = 'distance'
+        if getattr(self.global_feature_field, "semantics_emb_size", 0) != 0:
+            validation_modality = 'semantics'
+        else:  # Only distance embeddings are used
+            validation_modality = 'distance'
 
         # Extract features
         with torch.no_grad():
@@ -140,50 +122,6 @@ class AffineMatcher:
                             init_scores.append(np.inf)
                             pbar.update()
                             continue
-                    elif validation_modality == 'language_model':
-                        tgt_inst_emb = sentence_mapper[kwargs["obj_subclasses"]['pair_pos'][b_idx][tgt_unq_inst[tgt_inst_idx].long().item()]]
-                        ref_inst_emb = sentence_mapper[kwargs["obj_subclasses"]['pos'][b_idx][ref_unq_inst[ref_inst_idx].long().item()]]
-                        if np.linalg.norm(tgt_inst_emb - ref_inst_emb, axis=-1) > sentence_valid_thres:
-                            rot = torch.eye(3).to(init_tgt_match.device)
-                            trans = -(init_tgt_match @ init_scales.T) @ rot.T + init_ref_match
-                            transform = {'R': rot, 'S': init_scales, 'A': rot @ init_scales, 'T': trans}
-                            init_transform_list.append(transform)
-                            init_scores.append(np.inf)
-                            pbar.update()
-                            continue
-                    elif validation_modality == 'clip':
-                        tgt_inst_emb = clip_mapper[kwargs["obj_id"]['pair_pos'][b_idx][tgt_unq_inst[tgt_inst_idx].long().item()]]
-                        ref_inst_emb = clip_mapper[kwargs["obj_id"]['pos'][b_idx][ref_unq_inst[ref_inst_idx].long().item()]]
-                        if np.linalg.norm(tgt_inst_emb - ref_inst_emb, axis=-1) > clip_valid_thres:
-                            rot = torch.eye(3).to(init_tgt_match.device)
-                            trans = -(init_tgt_match @ init_scales.T) @ rot.T + init_ref_match
-                            transform = {'R': rot, 'S': init_scales, 'A': rot @ init_scales, 'T': trans}
-                            init_transform_list.append(transform)
-                            init_scores.append(np.inf)
-                            pbar.update()
-                            continue
-                    elif validation_modality == 'caption_model':
-                        tgt_inst_emb = caption_mapper[kwargs["obj_id"]['pair_pos'][b_idx][tgt_unq_inst[tgt_inst_idx].long().item()]]
-                        ref_inst_emb = caption_mapper[kwargs["obj_id"]['pos'][b_idx][ref_unq_inst[ref_inst_idx].long().item()]]
-                        if np.linalg.norm(tgt_inst_emb - ref_inst_emb, axis=-1) > caption_valid_thres:
-                            rot = torch.eye(3).to(init_tgt_match.device)
-                            trans = -(init_tgt_match @ init_scales.T) @ rot.T + init_ref_match
-                            transform = {'R': rot, 'S': init_scales, 'A': rot @ init_scales, 'T': trans}
-                            init_transform_list.append(transform)
-                            init_scores.append(np.inf)
-                            pbar.update()
-                            continue
-                    elif validation_modality == 'dino':
-                        tgt_inst_emb = dino_mapper[kwargs["obj_id"]['pair_pos'][b_idx][tgt_unq_inst[tgt_inst_idx].long().item()]]
-                        ref_inst_emb = dino_mapper[kwargs["obj_id"]['pos'][b_idx][ref_unq_inst[ref_inst_idx].long().item()]]
-                        if np.linalg.norm(tgt_inst_emb - ref_inst_emb, axis=-1) > dino_valid_thres:
-                            rot = torch.eye(3).to(init_tgt_match.device)
-                            trans = -(init_tgt_match @ init_scales.T) @ rot.T + init_ref_match
-                            transform = {'R': rot, 'S': init_scales, 'A': rot @ init_scales, 'T': trans}
-                            init_transform_list.append(transform)
-                            init_scores.append(np.inf)
-                            pbar.update()
-                            continue
 
                     # NOTE: We assume a transformation of form X_ref = (X_tgt - init_tgt_match) @ scale.T @ R.T + init_ref_match = X_tgt @ R.T + t
                     for rot_idx, rot in enumerate(self.rot_matrices):
@@ -222,26 +160,6 @@ class AffineMatcher:
             # Create matrix specifying object-level match validity based on specified modalities
             if validation_modality == 'semantics':
                 object_agreement = (tgt_inst_semantics[:, None] == ref_inst_semantics[None, :])
-            elif validation_modality == 'language_model':
-                tgt_inst_full_emb = np.stack([sentence_mapper[kwargs["obj_subclasses"]['pair_pos'][b_idx][inst.long().item()]] for inst in tgt_unq_inst], axis=0)
-                ref_inst_full_emb = np.stack([sentence_mapper[kwargs["obj_subclasses"]['pos'][b_idx][inst.long().item()]] for inst in ref_unq_inst], axis=0)
-                object_agreement = (np.linalg.norm(tgt_inst_full_emb[:, None] - ref_inst_full_emb[None, :], axis=-1) < sentence_valid_thres)
-                object_agreement = torch.from_numpy(object_agreement)
-            elif validation_modality == 'clip':
-                tgt_inst_full_emb = np.stack([clip_mapper[kwargs["obj_id"]['pair_pos'][b_idx][inst.long().item()]] for inst in tgt_unq_inst], axis=0)
-                ref_inst_full_emb = np.stack([clip_mapper[kwargs["obj_id"]['pos'][b_idx][inst.long().item()]] for inst in ref_unq_inst], axis=0)
-                object_agreement = (np.linalg.norm(tgt_inst_full_emb[:, None] - ref_inst_full_emb[None, :], axis=-1) < clip_valid_thres)
-                object_agreement = torch.from_numpy(object_agreement)
-            elif validation_modality == 'caption_model':
-                tgt_inst_full_emb = np.stack([caption_mapper[kwargs["obj_id"]['pair_pos'][b_idx][inst.long().item()]] for inst in tgt_unq_inst], axis=0)
-                ref_inst_full_emb = np.stack([caption_mapper[kwargs["obj_id"]['pos'][b_idx][inst.long().item()]] for inst in ref_unq_inst], axis=0)
-                object_agreement = (np.linalg.norm(tgt_inst_full_emb[:, None] - ref_inst_full_emb[None, :], axis=-1) < caption_valid_thres)
-                object_agreement = torch.from_numpy(object_agreement)
-            elif validation_modality == 'dino':
-                tgt_inst_full_emb = np.stack([dino_mapper[kwargs["obj_id"]['pair_pos'][b_idx][inst.long().item()]] for inst in tgt_unq_inst], axis=0)
-                ref_inst_full_emb = np.stack([dino_mapper[kwargs["obj_id"]['pos'][b_idx][inst.long().item()]] for inst in ref_unq_inst], axis=0)
-                object_agreement = (np.linalg.norm(tgt_inst_full_emb[:, None] - ref_inst_full_emb[None, :], axis=-1) < dino_valid_thres)
-                object_agreement = torch.from_numpy(object_agreement)
             else:
                 object_agreement = torch.ones(tgt_inst_centroids.shape[0], ref_inst_centroids.shape[0], dtype=bool)
 

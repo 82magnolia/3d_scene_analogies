@@ -169,18 +169,6 @@ class Trainer():
                 pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device))  # (N_batch, N_query, D_feat)
                 pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device))  # (N_batch, N_query, D_feat)
                 neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device))  # (N_batch, N_query, D_feat)
-            elif self.cfg.semantics_emb_type == 'language_model':
-                pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['pos'])  # (N_batch, N_query, D_feat)
-                pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['pair_pos'])  # (N_batch, N_query, D_feat)
-                neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['neg'])  # (N_batch, N_query, D_feat)
-            elif self.cfg.semantics_emb_type == 'clip':
-                pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pos'])  # (N_batch, N_query, D_feat)
-                pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pair_pos'])  # (N_batch, N_query, D_feat)
-                neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_id=scene_pcd['scene_obj_id']['neg'])  # (N_batch, N_query, D_feat)
-            elif self.cfg.semantics_emb_type == 'caption_model':
-                pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pos'])  # (N_batch, N_query, D_feat)
-                pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pair_pos'])  # (N_batch, N_query, D_feat)
-                neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_id=scene_pcd['scene_obj_id']['neg'])  # (N_batch, N_query, D_feat)
             else:
                 raise NotImplementedError("Other embeddings not supported")
 
@@ -223,18 +211,6 @@ class Trainer():
                     pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device))  # (N_batch, N_query, D_feat)
                     pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device))  # (N_batch, N_query, D_feat)
                     neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device))  # (N_batch, N_query, D_feat)
-                elif self.cfg.semantics_emb_type == 'language_model':
-                    pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['pos'])  # (N_batch, N_query, D_feat)
-                    pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['pair_pos'])  # (N_batch, N_query, D_feat)
-                    neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_subclasses=scene_pcd['scene_subclasses']['neg'])  # (N_batch, N_query, D_feat)
-                elif self.cfg.semantics_emb_type == 'clip':
-                    pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pos'])  # (N_batch, N_query, D_feat)
-                    pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pair_pos'])  # (N_batch, N_query, D_feat)
-                    neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_id=scene_pcd['scene_obj_id']['neg'])  # (N_batch, N_query, D_feat)
-                elif self.cfg.semantics_emb_type == 'caption_model':
-                    pos_feats = self.feature_field(query_pcd['pos'].to(self.device), scene_pcd['pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pos'])  # (N_batch, N_query, D_feat)
-                    pair_pos_feats = self.feature_field(query_pcd['pair_pos'].to(self.device), scene_pcd['pair_pos'].to(self.device), obj_id=scene_pcd['scene_obj_id']['pair_pos'])  # (N_batch, N_query, D_feat)
-                    neg_feats = self.feature_field(query_pcd['neg'].to(self.device), scene_pcd['neg'].to(self.device), obj_id=scene_pcd['scene_obj_id']['neg'])  # (N_batch, N_query, D_feat)
                 else:
                     raise NotImplementedError("Other embeddings not supported")
 
@@ -573,9 +549,6 @@ if __name__ == '__main__':
     parser.add_argument("--agg_radius_limit", help="Maximum number of points to be aggregated for ball query aggregation", default=100, type=int)
     parser.add_argument("--semantics_emb_size", help="Size of semantics embedding", default=32, type=int)
     parser.add_argument("--semantics_emb_type", help="Type of semantics embedding", default="class_vector", type=str)
-    parser.add_argument("--sentence_emb_path", help="Path to sentence embedding used if semantics_emb_type is language_model", default="./data/3d_front_gen_assets/cls_embedding.npz", type=str)
-    parser.add_argument("--clip_emb_path", help="Path to sentence embedding used if semantics_emb_type is clip", default="./data/3d_front_gen_assets/clip_embedding.npz", type=str)
-    parser.add_argument("--caption_emb_path", help="Path to caption embedding used if semantics_emb_type is caption_model", default="./data/3d_front_gen_assets/caption_embedding.npz", type=str)
     parser.add_argument("--gr_feat_type", help="Type of optional ground embedding to use", default=None, type=str)
     parser.add_argument("--height_emb_size", help="Size of height embedding", default=0, type=int)
     parser.add_argument("--distance_emb_size", help="Size of distance embedding", default=32, type=int)
